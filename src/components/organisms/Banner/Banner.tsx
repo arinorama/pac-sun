@@ -3,11 +3,15 @@ import Link from 'next/link';
 import { getImageUrl } from '@/lib/contentful/queries';
 import type { Entry, EntryFieldTypes, Asset as ContentfulAsset } from 'contentful';
 
+type VerticalAlign = 'top' | 'center' | 'bottom';
+type BannerType = 'hero' | 'slim' | 'promo';
+type TextPosition = 'left' | 'center' | 'right';
+
 interface BannerFields {
   contentTypeId: 'heroBanner';
   fields: {
     title: EntryFieldTypes.Symbol;
-    bannerType: EntryFieldTypes.Symbol<'hero' | 'slim' | 'promo'>;
+    bannerType: EntryFieldTypes.Symbol<BannerType>;
     subtitle?: EntryFieldTypes.Text;
     leftTitle?: EntryFieldTypes.Symbol;
     rightTitle?: EntryFieldTypes.Symbol;
@@ -27,7 +31,7 @@ interface BannerFields {
     ctaLeftWomenLink?: EntryFieldTypes.Symbol;
     ctaLeftKids?: EntryFieldTypes.Symbol;
     ctaLeftKidsLink?: EntryFieldTypes.Symbol;
-    ctaLeftVerticalAlign?: EntryFieldTypes.Symbol<'top' | 'center' | 'bottom'>;
+    ctaLeftVerticalAlign?: EntryFieldTypes.Symbol<VerticalAlign>;
     // Right side CTAs
     ctaRightMen?: EntryFieldTypes.Symbol;
     ctaRightMenLink?: EntryFieldTypes.Symbol;
@@ -35,8 +39,8 @@ interface BannerFields {
     ctaRightWomenLink?: EntryFieldTypes.Symbol;
     ctaRightKids?: EntryFieldTypes.Symbol;
     ctaRightKidsLink?: EntryFieldTypes.Symbol;
-    ctaRightVerticalAlign?: EntryFieldTypes.Symbol<'top' | 'center' | 'bottom'>;
-    textPosition?: EntryFieldTypes.Symbol<'left' | 'center' | 'right'>;
+    ctaRightVerticalAlign?: EntryFieldTypes.Symbol<VerticalAlign>;
+    textPosition?: EntryFieldTypes.Symbol<TextPosition>;
     backgroundColor?: EntryFieldTypes.Symbol;
   };
 }
@@ -47,17 +51,17 @@ interface BannerProps {
 
 export function Banner({ banner }: BannerProps) {
   const fields = banner.fields;
-  const bannerType = (fields.bannerType as 'hero' | 'slim' | 'promo') || 'hero';
+  const bannerType = (fields.bannerType as BannerType) || 'hero';
   const imageUrl = getImageUrl(fields.image as ContentfulAsset);
   const mobileImageUrl = fields.mobileImage
     ? getImageUrl(fields.mobileImage as ContentfulAsset)
     : imageUrl;
   const textPosition = fields.textPosition || 'center';
-  const ctaLeftVerticalAlign = (fields.ctaLeftVerticalAlign as 'top' | 'center' | 'bottom') || 'center';
-  const ctaRightVerticalAlign = (fields.ctaRightVerticalAlign as 'top' | 'center' | 'bottom') || 'center';
+  const ctaLeftVerticalAlign = (fields.ctaLeftVerticalAlign as VerticalAlign) || 'center';
+  const ctaRightVerticalAlign = (fields.ctaRightVerticalAlign as VerticalAlign) || 'center';
 
   // Helper function to get vertical alignment classes
-  const getVerticalAlignClass = (align: 'top' | 'center' | 'bottom') => {
+  const getVerticalAlignClass = (align: VerticalAlign) => {
     switch (align) {
       case 'top':
         return 'justify-start pt-12 md:pt-16';
