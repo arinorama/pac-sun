@@ -1,0 +1,2 @@
+export { ProductDetailTemplate } from './ProductDetailTemplate';
+

@@ -1,0 +1,2 @@
+export { HeaderPromoCarousel } from './HeaderPromoCarousel';
+
