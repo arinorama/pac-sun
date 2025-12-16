@@ -7,7 +7,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          'border-transparent bg-gray-200 text-foreground hover:bg-gray-300',
+          'border-transparent bg-gray-200 text-gray-900 hover:bg-gray-300',
         success:
           'border-transparent bg-success-light text-success-dark hover:bg-success',
         error:
@@ -29,7 +29,7 @@ interface BadgeProps
   children: React.ReactNode;
 }
 
-export function Badge({ variant, children, className, ...props }: BadgeProps) {
+export function Badge({ variant, children, className, ...props }: Readonly<BadgeProps>) {
   return (
     <div
       data-component="Badge"

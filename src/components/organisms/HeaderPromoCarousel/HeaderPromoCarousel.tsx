@@ -3,28 +3,32 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import type { Entry } from 'contentful';
 
-interface HeaderPromoItemFields {
-  desktopText: string;
-  mobileText?: string;
-  ctaMen?: string;
-  ctaMenLink?: string;
-  ctaWomen?: string;
-  ctaWomenLink?: string;
-  ctaKids?: string;
-  ctaKidsLink?: string;
+interface HeaderPromoItem {
+  sys: { id: string };
+  fields: {
+    desktopText?: string;
+    mobileText?: string;
+    ctaMen?: string;
+    ctaMenLink?: string;
+    ctaWomen?: string;
+    ctaWomenLink?: string;
+    ctaKids?: string;
+    ctaKidsLink?: string;
+  };
 }
 
 interface HeaderPromoCarouselFields {
   title?: string;
-  promoItems: Entry<HeaderPromoItemFields>[];
+  promoItems?: HeaderPromoItem[];
   autoplay?: boolean;
   autoplaySpeed?: number;
 }
 
 interface HeaderPromoCarouselProps {
-  carousel: Entry<HeaderPromoCarouselFields>;
+  carousel: {
+    fields: HeaderPromoCarouselFields;
+  };
 }
 
 export function HeaderPromoCarousel({ carousel }: HeaderPromoCarouselProps) {

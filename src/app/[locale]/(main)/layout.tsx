@@ -18,10 +18,10 @@ export const metadata: Metadata = {
 export default async function MainLayout({ 
   children,
   params,
-}: { 
+}: Readonly<{ 
   children: ReactNode;
-  params: { locale: string };
-}) {
+  params: Promise<{ locale: string }>;
+}>) {
   const { locale } = await params;
   const headerPromoCarousel = await getHeaderPromoCarousel(locale);
   const siteHeader = await getSiteHeader(locale);

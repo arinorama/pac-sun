@@ -1,26 +1,33 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
 import { getImageUrl } from '@/lib/contentful/queries';
-import type { Entry, Asset } from 'contentful';
+import type { Asset } from 'contentful';
+import { ImageWithOverlay } from '@/components/molecules/ImageWithOverlay';
+import { CTALink } from '@/components/molecules/CTALink';
+import { Heading } from '@/components/atoms/Heading';
+import { Text } from '@/components/atoms/Text';
 
-interface FooterPromoCardFields {
-  title: string;
-  hashtag?: string;
-  image: Asset;
-  description?: string;
-  ctaText?: string;
-  ctaLink?: string;
+interface PromoCard {
+  sys: { id: string };
+  fields: {
+    title?: string;
+    hashtag?: string;
+    image?: Asset;
+    description?: string;
+    ctaText?: string;
+    ctaLink?: string;
+  };
 }
 
 interface FooterPromoSectionFields {
   title?: string;
-  promoCards: Entry<FooterPromoCardFields>[];
+  promoCards?: PromoCard[];
 }
 
 interface FooterPromoSectionProps {
-  section: Entry<FooterPromoSectionFields>;
+  section: {
+    fields: FooterPromoSectionFields;
+  };
 }
 
 export function FooterPromoSection({ section }: FooterPromoSectionProps) {
@@ -44,10 +51,9 @@ export function FooterPromoSection({ section }: FooterPromoSectionProps) {
           data-component="FooterPromoSection.Grid"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          {promoCards.map((card, index) => {
+          {promoCards.map((card) => {
             const cardFields = card.fields;
             const imageUrl = getImageUrl(cardFields.image);
-            const imageFile = cardFields.image.fields.file;
 
             return (
               <div
@@ -56,61 +62,57 @@ export function FooterPromoSection({ section }: FooterPromoSectionProps) {
                 className="relative group overflow-hidden bg-gray-800 rounded-sm"
               >
                 {cardFields.image && (
-                  <div
-                    data-component="FooterPromoSection.ImageWrapper"
-                    className="relative w-full h-64 md:h-80"
-                  >
-                    <Image
+                  <div className="relative w-full h-64 md:h-80">
+                    <ImageWithOverlay
                       src={imageUrl}
                       alt={cardFields.title || ''}
-                      fill
-                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                      overlay="solid"
+                      overlayColor="black"
+                      overlayOpacity={40}
+                      className="h-full"
+                      imageClassName="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                      overlayClassName="group-hover:bg-black/20 transition-colors duration-300"
+                      contentClassName="flex flex-col justify-between p-6 text-white"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    />
-                    <div
-                      data-component="FooterPromoSection.Overlay"
-                      className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"
-                    />
+                    >
+                    <div>
+                      {cardFields.hashtag && (
+                        <Text
+                          data-component="FooterPromoSection.Hashtag"
+                          className="text-sm font-semibold mb-2"
+                        >
+                          {cardFields.hashtag}
+                        </Text>
+                      )}
+                      <Heading
+                        level="h3"
+                        data-component="FooterPromoSection.Title"
+                        className="text-xl md:text-2xl font-bold mb-2"
+                      >
+                        {cardFields.title}
+                      </Heading>
+                      {cardFields.description && (
+                        <Text
+                          data-component="FooterPromoSection.Description"
+                          className="text-sm md:text-base opacity-90 line-clamp-3"
+                        >
+                          {cardFields.description}
+                        </Text>
+                      )}
+                    </div>
+                    {cardFields.ctaText && cardFields.ctaLink && (
+                      <CTALink
+                        data-component="FooterPromoSection.CTA"
+                        href={cardFields.ctaLink}
+                        variant="border"
+                        className="mt-4"
+                      >
+                        {cardFields.ctaText}
+                      </CTALink>
+                    )}
+                    </ImageWithOverlay>
                   </div>
                 )}
-                <div
-                  data-component="FooterPromoSection.Content"
-                  className="absolute inset-0 flex flex-col justify-between p-6 text-white"
-                >
-                  <div>
-                    {cardFields.hashtag && (
-                      <p
-                        data-component="FooterPromoSection.Hashtag"
-                        className="text-sm font-semibold mb-2"
-                      >
-                        {cardFields.hashtag}
-                      </p>
-                    )}
-                    <h3
-                      data-component="FooterPromoSection.Title"
-                      className="text-xl md:text-2xl font-bold mb-2"
-                    >
-                      {cardFields.title}
-                    </h3>
-                    {cardFields.description && (
-                      <p
-                        data-component="FooterPromoSection.Description"
-                        className="text-sm md:text-base opacity-90 line-clamp-3"
-                      >
-                        {cardFields.description}
-                      </p>
-                    )}
-                  </div>
-                  {cardFields.ctaText && cardFields.ctaLink && (
-                    <Link
-                      data-component="FooterPromoSection.CTA"
-                      href={cardFields.ctaLink}
-                      className="mt-4 inline-block border-2 border-white px-6 py-2 text-sm font-semibold hover:bg-white hover:text-gray-900 transition-colors duration-200"
-                    >
-                      {cardFields.ctaText}
-                    </Link>
-                  )}
-                </div>
               </div>
             );
           })}

@@ -1,5 +1,5 @@
 import { contentfulClient } from './client';
-import type { Entry, Asset } from 'contentful';
+import type { Asset } from 'contentful';
 
 // Helper to map locale
 function mapLocale(locale: string): string {
@@ -58,7 +58,7 @@ export async function getCategories(locale: string = 'en') {
     content_type: 'category',
     locale: contentfulLocale,
     include: 1,
-    order: 'fields.order',
+    order: ['fields.order'] as never,
   });
 
   return response.items;
@@ -106,27 +106,6 @@ export async function getMegaMenu(locale: string = 'en') {
   });
 
   return response.items[0] || null;
-}
-
-// Get UI texts
-export async function getUITexts(locale: string = 'en'): Promise<Record<string, string>> {
-  const contentfulLocale = mapLocale(locale);
-  
-  const response = await contentfulClient.getEntries({
-    content_type: 'uiTexts',
-    locale: contentfulLocale,
-    limit: 1000,
-  });
-
-  // Transform to flat object: { "common.addToCart": "Add to Cart" }
-  return response.items.reduce((acc, item) => {
-    const key = item.fields.key as string;
-    const value = item.fields.value as string;
-    if (key && value) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as Record<string, string>);
 }
 
 // Get header promo carousel

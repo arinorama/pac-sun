@@ -1,117 +1,151 @@
-'use client';
-
 import Image from 'next/image';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/atoms/Button';
-import { Badge } from '@/components/atoms/Badge';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { getImageUrl } from '@/lib/contentful/queries';
+import { Card } from '@/components/atoms/Card';
+import { Heading } from '@/components/atoms/Heading';
+import { Text } from '@/components/atoms/Text';
 import type { Product } from '@/types/product';
+import { cn } from '@/lib/utils';
 
-const productCardVariants = cva(
-  'group relative overflow-hidden rounded-lg transition-all bg-white',
-  {
-    variants: {
-      variant: {
-        default: 'hover:shadow-lg',
-        compact: '',
-        featured: 'bg-gradient-to-b from-gray-50 to-white',
-      },
+const productCardVariants = cva('group', {
+  variants: {
+    layout: {
+      default: '',
+      compact: '',
+      featured: '',
     },
-    defaultVariants: {
-      variant: 'default',
+    imageAspectRatio: {
+      portrait: 'aspect-[3/4]',
+      square: 'aspect-square',
+      landscape: 'aspect-video',
     },
-  }
-);
+    priceDisplay: {
+      show: '',
+      hide: '',
+    },
+  },
+  defaultVariants: {
+    layout: 'default',
+    imageAspectRatio: 'portrait',
+    priceDisplay: 'show',
+  },
+});
 
-interface ProductCardProps extends VariantProps<typeof productCardVariants> {
+const productCardImageVariants = cva('relative w-full overflow-hidden mb-2', {
+  variants: {
+    layout: {
+      default: '',
+      compact: 'mb-1',
+      featured: 'mb-3',
+    },
+    imageAspectRatio: {
+      portrait: 'aspect-[3/4]',
+      square: 'aspect-square',
+      landscape: 'aspect-video',
+    },
+  },
+  defaultVariants: {
+    layout: 'default',
+    imageAspectRatio: 'portrait',
+  },
+});
+
+const productCardContentVariants = cva('', {
+  variants: {
+    layout: {
+      default: '',
+      compact: 'space-y-0.5',
+      featured: 'space-y-2',
+    },
+  },
+  defaultVariants: {
+    layout: 'default',
+  },
+});
+
+interface ProductCardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof productCardVariants> {
   product: Product;
-  onAddToCart?: (product: Product) => void;
-  onLike?: (productId: string) => void;
   className?: string;
+  showPrice?: boolean;
 }
 
 export function ProductCard({
   product,
-  variant,
-  onAddToCart,
-  onLike,
   className,
-}: ProductCardProps) {
-  const t = useTranslation();
-  const mainImage = product.fields.images?.[0];
-  const imageUrl = mainImage ? getImageUrl(mainImage) : '/placeholder.jpg';
+  showPrice = true,
+  layout = 'default',
+  imageAspectRatio = 'portrait',
+  priceDisplay,
+  ...props
+}: Readonly<ProductCardProps>) {
+  const productFields = product.fields as {
+    images?: Array<{ fields?: { file?: { url?: string } } }>;
+    name?: string;
+    title?: string;
+    price?: number;
+    slug?: string;
+  };
+
+  const imageUrl = productFields.images?.[0]?.fields?.file?.url;
+  const name = productFields.name || productFields.title || '';
+  const price = productFields.price;
+  const slug = productFields.slug || '#';
+  
+  // Determine if price should be shown
+  const shouldShowPrice = priceDisplay === 'show' || (priceDisplay !== 'hide' && showPrice);
 
   return (
-    <div
+    <Card
       data-component="ProductCard"
-      data-variant={variant}
-      className={cn(productCardVariants({ variant }), className)}
+      data-layout={layout}
+      data-image-aspect-ratio={imageAspectRatio}
+      variant="default"
+      className={cn(productCardVariants({ layout, imageAspectRatio, priceDisplay: shouldShowPrice ? 'show' : 'hide' }), className)}
+      {...props}
     >
-      <Link
-        href={`/product/${product.fields.slug}`}
-        data-component="ProductCard.Link"
-      >
-        <div
-          data-component="ProductCard.ImageWrapper"
-          className="relative aspect-square overflow-hidden"
-        >
-          <Image
-            data-component="ProductCard.Image"
-            src={imageUrl}
-            alt={product.fields.title}
-            fill
-            className="object-cover transition-transform group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-          {product.fields.isNew && (
-            <div
-              data-component="ProductCard.Badge"
-              className="absolute top-2 left-2"
+      <NextLink href={slug} className="block">
+        {imageUrl && (
+          <div className={cn(productCardImageVariants({ layout, imageAspectRatio }))}>
+            <Image
+              data-component="ProductCard.Image"
+              src={`https:${imageUrl}`}
+              alt={name}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          </div>
+        )}
+        <div className={cn(productCardContentVariants({ layout }))}>
+          <Heading
+            data-component="ProductCard.Name"
+            level="h3"
+            className={cn(
+              'font-normal mb-1 line-clamp-2',
+              layout === 'compact' && 'text-xs mb-0.5',
+              layout === 'featured' && 'text-base mb-2'
+            )}
+          >
+            {name}
+          </Heading>
+          {shouldShowPrice && price !== undefined && (
+            <Text
+              data-component="ProductCard.Price"
+              variant="bodySm"
+              weight="bold"
+              className={cn(
+                layout === 'compact' && 'text-xs',
+                layout === 'featured' && 'text-base'
+              )}
             >
-              <Badge variant="success">{t('product.new')}</Badge>
-            </div>
-          )}
-          {product.fields.isSale && (
-            <div
-              data-component="ProductCard.SaleBadge"
-              className="absolute top-2 right-2"
-            >
-              <Badge variant="error">{t('product.sale')}</Badge>
-            </div>
+              ${price}
+            </Text>
           )}
         </div>
-      </Link>
-
-      <div data-component="ProductCard.Info" className="p-4">
-        <h3
-          data-component="ProductCard.Title"
-          className="text-foreground font-medium mb-1 line-clamp-2"
-        >
-          {product.fields.title}
-        </h3>
-        <p
-          data-component="ProductCard.Price"
-          className="text-foreground-subtle font-semibold mb-3"
-        >
-          ${product.fields.price.toFixed(2)}
-        </p>
-        <Button
-          data-component="ProductCard.AddToCart"
-          variant="primary"
-          size="sm"
-          fullWidth
-          onClick={(e) => {
-            e.preventDefault();
-            onAddToCart?.(product);
-          }}
-        >
-          {t('common.addToCart')}
-        </Button>
-      </div>
-    </div>
+      </NextLink>
+    </Card>
   );
 }
 

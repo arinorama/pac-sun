@@ -1,47 +1,56 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useCartStore } from '@/store/useCartStore';
 import { useUIStore } from '@/store/useUIStore';
-import { LanguageSwitcher } from '@/components/molecules/LanguageSwitcher';
-import { CurrencySwitcher } from '@/components/molecules/CurrencySwitcher';
 import { Button } from '@/components/atoms/Button';
-import { ShoppingCart, Menu, User, Search, Camera, Heart } from 'lucide-react';
-import type { Entry, Asset } from 'contentful';
+import { IconButton } from '@/components/atoms/IconButton';
+import { SearchInput } from '@/components/molecules/SearchInput';
+import { ShoppingCart, User, Search, Camera, Heart } from 'lucide-react';
+import type { Asset } from 'contentful';
 
 // Types for Contentful header data
-interface NavigationMenuItemFields {
-  label: string;
-  link: string;
-  description?: string;
-  icon?: string;
-  isLeadSection?: boolean;
-  subItems?: Entry<NavigationMenuItemFields>[];
-  order?: number;
-  isActive?: boolean;
+interface NavigationMenuItem {
+  sys: { id: string };
+  fields: {
+    label?: string;
+    link?: string;
+    description?: string;
+    icon?: string;
+    isLeadSection?: boolean;
+    subItems?: NavigationMenuItem[];
+    order?: number;
+    isActive?: boolean;
+  };
 }
 
-interface NavigationMenuFields {
-  label: string;
-  slug: string;
-  link?: string;
-  hasDropdown?: boolean;
-  dropdownItems?: Entry<NavigationMenuItemFields>[];
-  highlightColor?: string;
-  order?: number;
-  isActive?: boolean;
+interface NavigationMenu {
+  sys: { id: string };
+  fields: {
+    label?: string;
+    slug?: string;
+    link?: string;
+    hasDropdown?: boolean;
+    dropdownItems?: NavigationMenuItem[];
+    highlightColor?: string;
+    order?: number;
+    isActive?: boolean;
+  };
 }
 
 interface SiteHeaderFields {
-  title: string;
+  title?: string;
   logo?: Asset;
   logoAlt?: string;
-  navigationMenus?: Entry<NavigationMenuFields>[];
+  navigationMenus?: NavigationMenu[];
 }
 
 interface HeaderProps {
-  headerData?: Entry<SiteHeaderFields>;
+  headerData?: {
+    fields: SiteHeaderFields;
+  };
 }
 
 export function Header({ headerData }: HeaderProps) {
@@ -143,8 +152,8 @@ export function Header({ headerData }: HeaderProps) {
                       const menuFields = menu.fields;
                       if (!menuFields?.isActive) return null;
 
-                      const slug = menuFields.slug;
-                      const label = menuFields.label;
+                      const slug = menuFields.slug || '';
+                      const label = menuFields.label || '';
                       const link = menuFields.link;
                       const hasDropdown = menuFields.hasDropdown;
                       const dropdownItems = menuFields.dropdownItems || [];
@@ -185,8 +194,7 @@ export function Header({ headerData }: HeaderProps) {
                                           <li key={item.sys.id}>
                                             <Link
                                               href={item.fields.link || '#'}
-                                              className="text-[clamp(1rem,2.5vw,3rem)] font-medium text-gray-900 hover:text-gray-600 leading-tight block transition-colors"
-                                              style={{ letterSpacing: '-0.75px' }}
+                                              className="text-[clamp(1rem,2.5vw,3rem)] font-medium text-gray-900 hover:text-gray-600 leading-tight block transition-colors tracking-[-0.75px]"
                                             >
                                               {item.fields.label}
                                             </Link>
@@ -226,10 +234,13 @@ export function Header({ headerData }: HeaderProps) {
                 className="logo-home flex items-center"
                 title={logoAlt}
               >
-                <img
+                <Image
                   src={logoUrl}
                   alt={logoAlt}
+                  width={120}
+                  height={32}
                   className="h-8 w-auto"
+                  priority
                 />
               </Link>
             </div>
@@ -238,55 +249,45 @@ export function Header({ headerData }: HeaderProps) {
             <div className="col-span-5 flex justify-end items-center h-full gap-2">
               {/* Desktop Search */}
               <div className="hidden md:flex items-center">
-                <div className="relative w-[200px]">
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    className="w-full px-4 py-2 text-sm border-0 bg-gray-100 rounded-full focus:outline-none focus:ring-0 placeholder:text-gray-500"
-                    aria-label="Search"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full"
-                    aria-label="Submit search"
-                  >
-                    <Search className="w-4 h-4 text-gray-900" />
-                  </button>
-                </div>
+                <SearchInput
+                  placeholder="Search"
+                  variant="rounded"
+                  className="w-[200px]"
+                />
               </div>
 
               {/* Mobile Search Button */}
-              <button
-                className="md:hidden p-2 hover:bg-gray-100 rounded"
+              <IconButton
+                className="md:hidden"
                 onClick={() => setSearchOpen(!searchOpen)}
                 aria-label="Toggle search"
               >
                 <Search className="w-5 h-5 text-gray-900" />
-              </button>
+              </IconButton>
 
               {/* Camera/Photo */}
-              <button
-                className="hidden lg:flex p-2 hover:bg-gray-100 rounded items-center justify-center"
+              <IconButton
+                className="hidden lg:flex"
                 aria-label="Photo"
               >
                 <Camera className="w-5 h-5 text-gray-900" />
-              </button>
+              </IconButton>
 
               {/* Account */}
-              <button
-                className="hidden lg:flex p-2 hover:bg-gray-100 rounded items-center justify-center"
+              <IconButton
+                className="hidden lg:flex"
                 aria-label="Account"
               >
                 <User className="w-5 h-5 text-gray-900" />
-              </button>
+              </IconButton>
 
               {/* My Likes */}
-              <button
-                className="hidden lg:flex p-2 hover:bg-gray-100 rounded items-center justify-center"
+              <IconButton
+                className="hidden lg:flex"
                 aria-label="My Likes"
               >
                 <Heart className="w-5 h-5 text-gray-900" />
-              </button>
+              </IconButton>
 
               {/* Cart */}
               <Button
@@ -314,21 +315,10 @@ export function Header({ headerData }: HeaderProps) {
         {/* Mobile Search Bar */}
         {searchOpen && (
           <div className="md:hidden border-t border-gray-200 bg-white px-4 py-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search"
-                className="w-full px-4 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-900"
-                aria-label="Search"
-              />
-              <button
-                type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1"
-                aria-label="Submit search"
-              >
-                <Search className="w-4 h-4 text-gray-900" />
-              </button>
-            </div>
+            <SearchInput
+              placeholder="Search"
+              variant="default"
+            />
           </div>
         )}
       </nav>

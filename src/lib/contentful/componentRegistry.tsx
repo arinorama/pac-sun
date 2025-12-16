@@ -5,7 +5,7 @@ import { BrandSection } from '@/components/organisms/BrandSection';
 import { ProductCarousel } from '@/components/organisms/ProductCarousel';
 import { FooterPromoSection } from '@/components/organisms/FooterPromoSection';
 import { StyledByYouSection } from '@/components/organisms/StyledByYouSection';
-import type { ReactElement, ComponentType } from 'react';
+import type { ReactElement } from 'react';
 
 // Contentful component from CMS (dynamic type with sys metadata)
 export interface ContentfulComponent {
@@ -34,31 +34,81 @@ export type ContentTypeId =
   | 'footerPromoSection'
   | 'styledByYouSection';
 
-export interface ComponentConfig {
-  component: ComponentType<Record<string, unknown>>;
-  propName: string;
-  withLocale?: boolean;
+// Strategy Pattern: Component render context
+export interface ComponentRenderContext {
+  component: ContentfulComponent;
+  locale?: string;
 }
 
-// Component registry: Mapped type ensures all ContentTypeIds are covered
-// Using double assertion (as unknown as) for type-safe heterogeneous component collection
-export const COMPONENT_REGISTRY: Record<ContentTypeId, ComponentConfig> = {
-  banner: { component: Banner as unknown as ComponentType<Record<string, unknown>>, propName: 'banner' },
-  heroBanner: { component: Banner as unknown as ComponentType<Record<string, unknown>>, propName: 'banner' },
-  slimBanner: { component: Banner as unknown as ComponentType<Record<string, unknown>>, propName: 'banner' },
-  promoBanner: { component: Banner as unknown as ComponentType<Record<string, unknown>>, propName: 'banner' },
-  twoCardLayout: { component: Banner as unknown as ComponentType<Record<string, unknown>>, propName: 'banner' },
-  categoryBanner: { component: CategoryBanner as unknown as ComponentType<Record<string, unknown>>, propName: 'banner' },
-  tileSection: { component: TileSection as unknown as ComponentType<Record<string, unknown>>, propName: 'section' },
-  brandSection: { component: BrandSection as unknown as ComponentType<Record<string, unknown>>, propName: 'section' },
-  productCarousel: { component: ProductCarousel as unknown as ComponentType<Record<string, unknown>>, propName: 'carousel', withLocale: true },
-  footerPromoSection: { component: FooterPromoSection as unknown as ComponentType<Record<string, unknown>>, propName: 'section' },
-  styledByYouSection: { component: StyledByYouSection as unknown as ComponentType<Record<string, unknown>>, propName: 'section', withLocale: true },
+// Strategy Pattern: Component render strategy type
+type ComponentRenderStrategy = (context: ComponentRenderContext) => ReactElement | null;
+
+// Simple type cast helper - ContentfulComponent is the correct type at runtime
+const cast = <T,>(c: ContentfulComponent): T => c as unknown as T;
+
+// Strategy Pattern: Component render strategies for each content type
+const renderBanner: ComponentRenderStrategy = ({ component }) => (
+  <Banner key={component.sys.id} banner={cast(component)} />
+);
+
+const renderHeroBanner: ComponentRenderStrategy = ({ component }) => (
+  <Banner key={component.sys.id} banner={cast(component)} />
+);
+
+const renderSlimBanner: ComponentRenderStrategy = ({ component }) => (
+  <Banner key={component.sys.id} banner={cast(component)} />
+);
+
+const renderPromoBanner: ComponentRenderStrategy = ({ component }) => (
+  <Banner key={component.sys.id} banner={cast(component)} />
+);
+
+const renderTwoCardLayout: ComponentRenderStrategy = ({ component }) => (
+  <Banner key={component.sys.id} banner={cast(component)} />
+);
+
+const renderCategoryBanner: ComponentRenderStrategy = ({ component }) => (
+  <CategoryBanner key={component.sys.id} banner={cast(component)} />
+);
+
+const renderTileSection: ComponentRenderStrategy = ({ component }) => (
+  <TileSection key={component.sys.id} section={cast(component)} />
+);
+
+const renderBrandSection: ComponentRenderStrategy = ({ component }) => (
+  <BrandSection key={component.sys.id} section={cast(component)} />
+);
+
+const renderProductCarousel: ComponentRenderStrategy = ({ component, locale }) => (
+  <ProductCarousel key={component.sys.id} carousel={cast(component)} locale={locale} />
+);
+
+const renderFooterPromoSection: ComponentRenderStrategy = ({ component }) => (
+  <FooterPromoSection key={component.sys.id} section={cast(component)} />
+);
+
+const renderStyledByYouSection: ComponentRenderStrategy = ({ component, locale }) => (
+  <StyledByYouSection key={component.sys.id} section={cast(component)} locale={locale} />
+);
+
+// Strategy Pattern: Component type strategy map - type-safe and extensible
+const componentRenderStrategies: Record<ContentTypeId, ComponentRenderStrategy> = {
+  banner: renderBanner,
+  heroBanner: renderHeroBanner,
+  slimBanner: renderSlimBanner,
+  promoBanner: renderPromoBanner,
+  twoCardLayout: renderTwoCardLayout,
+  categoryBanner: renderCategoryBanner,
+  tileSection: renderTileSection,
+  brandSection: renderBrandSection,
+  productCarousel: renderProductCarousel,
+  footerPromoSection: renderFooterPromoSection,
+  styledByYouSection: renderStyledByYouSection,
 };
 
 // Type guard to check if a string is a valid ContentTypeId
 export const isValidContentType = (type: string): type is ContentTypeId => {
-  return type in COMPONENT_REGISTRY;
+  return type in componentRenderStrategies;
 };
 
 // Configuration for component rendering
@@ -66,12 +116,7 @@ export interface RenderConfig {
   locale?: string;
 }
 
-/**
- * Renders a Contentful component dynamically based on its content type
- * @param component - The Contentful component to render
- * @param config - Additional configuration (e.g., locale)
- * @returns React element or null
- */
+// Renders a Contentful component dynamically based on its content type using Strategy Pattern
 export const renderContentfulComponent = (
   component: ContentfulComponent,
   config: RenderConfig = {}
@@ -95,15 +140,16 @@ export const renderContentfulComponent = (
     return null;
   }
 
-  const registryConfig = COMPONENT_REGISTRY[contentType];
-  const { component: Component, propName, withLocale } = registryConfig;
+  // Get the appropriate render strategy
+  const renderStrategy = componentRenderStrategies[contentType];
 
-  // Build props dynamically (excluding key - React best practice)
-  const componentProps: Record<string, unknown> = {
-    [propName]: component,
-    ...(withLocale && config.locale && { locale: config.locale }),
+  // Render context for strategy pattern
+  const renderContext: ComponentRenderContext = {
+    component,
+    locale: config.locale,
   };
 
-  return <Component key={component.sys.id} {...componentProps} />;
+  // Execute the strategy
+  return renderStrategy(renderContext);
 };
 

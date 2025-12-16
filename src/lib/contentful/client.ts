@@ -8,30 +8,15 @@ function getEnvVars() {
   const previewAccessToken = process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN;
 
   if (!space || !accessToken) {
-    const errorMessage =
-      '❌ Missing Contentful environment variables!\n\n' +
-      'Current values:\n' +
-      `  CONTENTFUL_SPACE_ID: ${space ? '✅ Set' : '❌ Missing'}\n` +
-      `  CONTENTFUL_ACCESS_TOKEN: ${accessToken ? '✅ Set' : '❌ Missing'}\n\n` +
-      'Please check your .env.local file and ensure:\n' +
-      '1. File is in the project root (same folder as package.json)\n' +
-      '2. Variables are defined without quotes: CONTENTFUL_ACCESS_TOKEN=your_token\n' +
-      '3. No spaces around the = sign\n' +
-      '4. Dev server has been restarted after adding variables\n\n' +
-      'After fixing, restart your Next.js dev server:\n' +
-      '  - Stop: Ctrl+C\n' +
-      '  - Start: npm run dev';
+    const errorMessage = 'Missing Contentful environment variables';
     
     // eslint-disable-next-line no-console
     console.error(errorMessage);
     
-    // In development, throw error to show helpful message
-    // In production, we'll use fallback values
     if (process.env.NODE_ENV === 'development') {
       throw new Error(errorMessage);
     }
     
-    // In production, return null to handle gracefully
     return { space: null, accessToken: null, previewAccessToken: null };
   }
 

@@ -10,7 +10,7 @@ const buttonVariants = cva(
           'bg-brand-black text-brand-white hover:bg-gray-800 focus-visible:ring-brand-black',
         secondary:
           'bg-brand-white text-brand-black border-2 border-brand-black hover:bg-gray-50 focus-visible:ring-brand-black',
-        ghost: 'hover:bg-hover text-foreground focus-visible:ring-gray-300',
+        ghost: 'hover:bg-gray-100 text-gray-900 focus-visible:ring-gray-300',
         link: 'text-brand-black underline-offset-4 hover:underline focus-visible:ring-gray-300',
         banner: 'text-brand-white font-poppins text-[16.6px] px-4 py-1 font-medium h-auto uppercase underline underline-offset-2',
         destructive:
@@ -52,7 +52,7 @@ export function Button({
   children,
   className,
   ...props
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   return (
     <button
       data-component="Button"

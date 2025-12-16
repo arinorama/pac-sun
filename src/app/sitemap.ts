@@ -1,15 +1,14 @@
 import { MetadataRoute } from 'next';
+import { locales } from '@/lib/i18n/config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const locales = ['en', 'tr'];
 
   const routes = [
     '',
     '/womens',
     '/mens',
-    '/search',
-    '/cart',
+    '/kids',
   ];
 
   const sitemapEntries: MetadataRoute.Sitemap = [];

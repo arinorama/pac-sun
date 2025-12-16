@@ -1,22 +1,23 @@
 'use client';
 
-import { ProductCard } from '@/components/molecules/ProductCard';
-import { useCartStore } from '@/store/useCartStore';
 import { getProducts } from '@/lib/contentful/queries';
-import type { Entry } from 'contentful';
 import type { Product } from '@/types/product';
 import { useEffect, useState } from 'react';
+import { SectionHeader } from '@/components/molecules/SectionHeader';
+import { ProductCard } from '@/components/molecules/ProductCard';
 
 interface ProductCarouselFields {
-  title: string;
+  title?: string;
   subtitle?: string;
-  products?: Entry<unknown>[];
-  category?: Entry<unknown>;
+  products?: Product[];
+  category?: { sys: { id: string } };
   limit?: number;
 }
 
 interface ProductCarouselProps {
-  carousel: Entry<ProductCarouselFields>;
+  carousel: {
+    fields: ProductCarouselFields;
+  };
   locale?: string;
 }
 
@@ -25,7 +26,6 @@ export function ProductCarousel({
   locale = 'en',
 }: ProductCarouselProps) {
   const fields = carousel.fields;
-  const { addItem } = useCartStore();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -38,9 +38,7 @@ export function ProductCarousel({
         }
 
         // Otherwise, fetch by category or get featured products
-        const categoryId = fields.category
-          ? (fields.category as Entry<unknown>).sys.id
-          : undefined;
+        const categoryId = fields.category?.sys.id;
         const limit = fields.limit || 8;
 
         const fetchedProducts = await getProducts(locale, categoryId, limit);
@@ -62,22 +60,11 @@ export function ProductCarousel({
       data-component="ProductCarousel"
       className="my-5 px-md-5 px-3"
     >
-      <div className="text-center mb-4">
-        <h2
-          data-component="ProductCarousel.Title"
-          className="font-normal uppercase"
-        >
-          {fields.title}
-        </h2>
-        {fields.subtitle && (
-          <p
-            data-component="ProductCarousel.Subtitle"
-            className="mt-2"
-          >
-            {fields.subtitle}
-          </p>
-        )}
-      </div>
+      <SectionHeader
+        title={fields.title}
+        subtitle={fields.subtitle}
+        className="mb-4"
+      />
       <div
         data-component="ProductCarousel.Grid"
         className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
@@ -86,7 +73,7 @@ export function ProductCarousel({
           <ProductCard
             key={product.sys.id}
             product={product}
-            onAddToCart={addItem}
+            data-component="ProductCarousel.ProductCard"
           />
         ))}
       </div>

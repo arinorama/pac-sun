@@ -1,32 +1,32 @@
 import { notFound } from 'next/navigation';
-import { TranslationProvider } from '@/contexts/TranslationContext';
+import { Poppins } from 'next/font/google';
 import { Providers } from '@/app/providers';
-import { getUITexts } from '@/lib/contentful/queries';
+import { locales } from '@/lib/i18n/config';
 import type { ReactNode } from 'react';
 
-const locales = ['en', 'tr'];
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
+});
 
 export default async function LocaleLayout({
   children,
   params,
-}: {
+}: Readonly<{
   children: ReactNode;
-  params: { locale: string };
-}) {
+  params: Promise<{ locale: string }>;
+}>) {
   const { locale } = await params;
 
-  if (!locales.includes(locale)) {
+  if (!locales.includes(locale as never)) {
     notFound();
   }
 
-  const uiTexts = await getUITexts(locale);
-
   return (
     <html lang={locale}>
-      <body>
-        <Providers>
-          <TranslationProvider texts={uiTexts}>{children}</TranslationProvider>
-        </Providers>
+      <body className={`font-sans ${poppins.variable}`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

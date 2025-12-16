@@ -1,37 +1,35 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/components/atoms/Link';
 import { getImageUrl } from '@/lib/contentful/queries';
-import type { Entry, Asset, EntrySkeletonType } from 'contentful';
+import type { Asset } from 'contentful';
+import { SectionHeader } from '@/components/molecules/SectionHeader';
+import { Heading } from '@/components/atoms/Heading';
+import { Text } from '@/components/atoms/Text';
 
-interface BrandCardFields {
-  title?: string;
-  subtitle?: string;
-  image: Asset;
-  logo?: Asset;
-  ctaText?: string;
-  ctaLink: string;
-}
-
-interface BrandCardSkeleton extends EntrySkeletonType {
-  contentTypeId: 'brandCard';
-  fields: BrandCardFields;
+interface BrandCard {
+  sys: { id: string };
+  fields: {
+    title?: string;
+    subtitle?: string;
+    image?: Asset;
+    logo?: Asset;
+    ctaText?: string;
+    ctaLink?: string;
+  };
 }
 
 interface BrandSectionFields {
-  title: string;
-  brandCards?: Entry<BrandCardSkeleton, 'WITHOUT_UNRESOLVABLE_LINKS'>[];
-}
-
-interface BrandSectionSkeleton extends EntrySkeletonType {
-  contentTypeId: 'brandSection';
-  fields: BrandSectionFields;
+  title?: string;
+  brandCards?: BrandCard[];
 }
 
 interface BrandSectionProps {
-  readonly section: Entry<BrandSectionSkeleton, 'WITHOUT_UNRESOLVABLE_LINKS'>;
+  readonly section: {
+    fields: BrandSectionFields;
+  };
 }
 
-function BrandCard({ card }: { readonly card: Entry<BrandCardSkeleton, 'WITHOUT_UNRESOLVABLE_LINKS'> }) {
+function BrandCardComponent({ card }: { readonly card: BrandCard }) {
   const fields = card.fields;
   const imageUrl = getImageUrl(fields.image);
   const logoUrl = fields.logo ? getImageUrl(fields.logo) : null;
@@ -43,11 +41,11 @@ function BrandCard({ card }: { readonly card: Entry<BrandCardSkeleton, 'WITHOUT_
     >
       <Link
         data-component="BrandCard.Link"
-        href={fields.ctaLink}
+        href={fields.ctaLink || '#'}
         className="block"
       >
         {/* Image */}
-        <div className="relative w-full" style={{ aspectRatio: '306/475' }}>
+        <div className="relative w-full aspect-[306/475]">
           <Image
             data-component="BrandCard.Image"
             src={imageUrl}
@@ -76,14 +74,17 @@ function BrandCard({ card }: { readonly card: Entry<BrandCardSkeleton, 'WITHOUT_
             ) : (
               <>
                 {fields.title && (
-                  <h3 className="text-xl md:text-2xl font-bold leading-tight text-black">
+                  <Heading
+                    level="h3"
+                    className="text-xl md:text-2xl font-bold leading-tight text-black"
+                  >
                     {fields.title}
-                  </h3>
+                  </Heading>
                 )}
                 {fields.subtitle && (
-                  <p className="text-sm md:text-base font-normal text-gray-700">
+                  <Text className="text-sm md:text-base font-normal text-gray-700">
                     {fields.subtitle}
-                  </p>
+                  </Text>
                 )}
               </>
             )}
@@ -116,17 +117,14 @@ export function BrandSection({ section }: BrandSectionProps) {
       data-component="BrandSection"
       className="my-8 md:my-12 px-3 md:px-5"
     >
-      <div className="text-center mb-6 md:mb-8">
-        <h2
-          data-component="BrandSection.Title"
-          className="font-normal uppercase text-2xl md:text-4xl tracking-wide"
-        >
-          {fields.title}
-        </h2>
-      </div>
+      <SectionHeader
+        title={fields.title}
+        className="mb-6 md:mb-8"
+        titleClassName="font-normal uppercase text-2xl md:text-4xl tracking-wide"
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-[1400px] mx-auto">
-        {brandCards.map((card: Entry<BrandCardSkeleton, 'WITHOUT_UNRESOLVABLE_LINKS'>) => (
-          <BrandCard key={card.sys.id} card={card} />
+        {brandCards.map((card) => (
+          <BrandCardComponent key={card.sys.id} card={card} />
         ))}
       </div>
     </section>

@@ -1,12 +1,25 @@
-import type { Entry } from 'contentful';
-
 export interface PageFields {
-  title: string;
-  slug: string;
-  components?: Entry<unknown>[];
+  title?: string;
+  slug?: string;
+  components?: Array<{
+    sys: {
+      id: string;
+      contentType: {
+        sys: {
+          id: string;
+        };
+      };
+    };
+    fields?: Record<string, unknown>;
+  }>;
   seoTitle?: string;
   seoDescription?: string;
 }
 
-export type Page = Entry<PageFields>;
+export interface Page {
+  fields: PageFields;
+  sys: {
+    id: string;
+  };
+}
 

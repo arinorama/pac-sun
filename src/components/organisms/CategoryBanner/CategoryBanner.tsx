@@ -1,17 +1,21 @@
-import Link from 'next/link';
-import type { Entry } from 'contentful';
+import { Link } from '@/components/atoms/Link';
 
-interface CategoryLinkFields {
-  text: string;
-  link: string;
+interface CategoryItem {
+  sys: { id: string };
+  fields: {
+    text?: string;
+    link?: string;
+  };
 }
 
 interface CategoryBannerFields {
-  categories: Entry<CategoryLinkFields>[];
+  categories?: CategoryItem[];
 }
 
 interface CategoryBannerProps {
-  banner: Entry<CategoryBannerFields>;
+  banner: {
+    fields: CategoryBannerFields;
+  };
 }
 
 export function CategoryBanner({ banner }: CategoryBannerProps) {
@@ -27,18 +31,17 @@ export function CategoryBanner({ banner }: CategoryBannerProps) {
       className="w-full px-3 flex justify-center"
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-[2vw] w-full px-8">
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <div
             key={category.sys.id}
             data-component="CategoryBanner.Item"
             className="border-2 border-[#441212]"
           >
             <Link
-              href={category.fields.link}
-              className="block bg-[#441212] text-white text-center py-4 px-1 text-[1.25vw] md:text-[1.25vw] text-base font-medium uppercase hover:underline transition-all"
-              style={{ textUnderlineOffset: '1.5px', textDecorationThickness: '1px' }}
+              href={category.fields.link || '#'}
+              variant="category"
             >
-              {category.fields.text}
+              {category.fields.text || ''}
             </Link>
           </div>
         ))}
