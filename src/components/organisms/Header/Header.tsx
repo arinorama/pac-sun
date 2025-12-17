@@ -7,7 +7,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { useUIStore } from '@/store/useUIStore';
 import { Button } from '@/components/atoms/Button';
 import { IconButton } from '@/components/atoms/IconButton';
-import { SearchInput } from '@/components/molecules/SearchInput';
+import { SearchModal } from '@/components/organisms/SearchModal';
 import { ShoppingCart, User, Search, Camera, Heart } from 'lucide-react';
 import type { Asset } from 'contentful';
 
@@ -51,13 +51,13 @@ interface HeaderProps {
   headerData?: {
     fields: SiteHeaderFields;
   };
+  locale?: string;
 }
 
-export function Header({ headerData }: HeaderProps) {
+export function Header({ headerData, locale = 'en' }: HeaderProps) {
   const { totalItems } = useCartStore();
-  const { openCart, toggleMobileMenu } = useUIStore();
+  const { openCart, toggleMobileMenu, openSearchModal } = useUIStore();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   const handleClick = (menu: string) => {
@@ -247,20 +247,22 @@ export function Header({ headerData }: HeaderProps) {
 
             {/* Right Section: Search + Icons */}
             <div className="col-span-5 flex justify-end items-center h-full gap-2">
-              {/* Desktop Search */}
-              <div className="hidden md:flex items-center">
-                <SearchInput
-                  placeholder="Search"
-                  variant="rounded"
-                  className="w-[200px]"
-                />
-              </div>
+              {/* Desktop Search Button */}
+              <button
+                data-component="Header.SearchButton"
+                onClick={openSearchModal}
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                aria-label="Open search"
+              >
+                <Search className="w-4 h-4 text-gray-600" />
+                <span className="text-sm text-gray-600">Search</span>
+              </button>
 
               {/* Mobile Search Button */}
               <IconButton
                 className="md:hidden"
-                onClick={() => setSearchOpen(!searchOpen)}
-                aria-label="Toggle search"
+                onClick={openSearchModal}
+                aria-label="Open search"
               >
                 <Search className="w-5 h-5 text-gray-900" />
               </IconButton>
@@ -311,17 +313,10 @@ export function Header({ headerData }: HeaderProps) {
             </div>
           </div>
         </div>
-
-        {/* Mobile Search Bar */}
-        {searchOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white px-4 py-3">
-            <SearchInput
-              placeholder="Search"
-              variant="default"
-            />
-          </div>
-        )}
       </nav>
+
+      {/* Search Modal */}
+      <SearchModal locale={locale} />
     </header>
   );
 }

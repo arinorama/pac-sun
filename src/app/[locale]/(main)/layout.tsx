@@ -29,7 +29,7 @@ export default async function MainLayout({
   return (
     <div data-component="MainLayout" className="flex flex-col min-h-screen">
       {headerPromoCarousel && <HeaderPromoCarousel carousel={headerPromoCarousel} />}
-      <Header headerData={siteHeader || undefined} />
+      <Header headerData={siteHeader || undefined} locale={locale} />
       <main data-component="MainLayout.Content" className="flex-1">
         {children}
       </main>

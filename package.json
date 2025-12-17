@@ -10,6 +10,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "algolia:sync": "tsx scripts/algolia-sync.ts",
+    "contentful:create-products": "tsx scripts/create-sample-products.ts",
     "contentful:import-header": "tsx scripts/import-header-content-types.ts",
     "contentful:import-simple-header": "tsx scripts/import-simple-header.ts",
     "contentful:import-unified": "tsx scripts/import-unified-content-types.ts",
