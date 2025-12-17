@@ -21,7 +21,6 @@ const dividerVariants = cva('', {
     },
   },
   compoundVariants: [
-    // Horizontal spacing
     {
       orientation: 'horizontal',
       spacing: 'sm',
@@ -42,7 +41,6 @@ const dividerVariants = cva('', {
       spacing: 'xl',
       className: 'my-8',
     },
-    // Vertical spacing
     {
       orientation: 'vertical',
       spacing: 'sm',
@@ -63,7 +61,6 @@ const dividerVariants = cva('', {
       spacing: 'xl',
       className: 'mx-8',
     },
-    // Dashed and dotted need border
     {
       variant: 'dashed',
       orientation: 'horizontal',

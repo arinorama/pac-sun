@@ -24,7 +24,6 @@ export function NavigationMenu({ items, className }: Readonly<NavigationMenuProp
     setActiveDropdown(activeDropdown === label ? null : label);
   };
 
-  // Click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {

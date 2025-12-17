@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { User, LogOut, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -62,7 +63,6 @@ export function AccountMenu({
       data-component="AccountMenu"
       className={cn('relative', className)}
     >
-      {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -70,12 +70,15 @@ export function AccountMenu({
         aria-expanded={isOpen}
       >
         {user?.avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="w-8 h-8 rounded-full object-cover"
-          />
+          <div className="relative w-8 h-8 rounded-full overflow-hidden">
+            <Image
+              src={user.avatar}
+              alt={user.name}
+              fill
+              className="object-cover"
+              sizes="32px"
+            />
+          </div>
         ) : (
           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
             <User className="w-5 h-5 text-gray-600" />
@@ -89,13 +92,11 @@ export function AccountMenu({
         />
       </button>
 
-      {/* Dropdown Menu */}
       {isOpen && (
         <div
           data-component="AccountMenu.Dropdown"
           className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
-          {/* User Info */}
           {user && (
             <>
               <div className="px-4 py-3 border-b border-gray-200">
@@ -107,7 +108,6 @@ export function AccountMenu({
             </>
           )}
 
-          {/* Menu Items */}
           <div className="py-1">
             {menuItems.map((item, index) => {
               if (item.divider) {
@@ -145,7 +145,6 @@ export function AccountMenu({
               );
             })}
 
-            {/* Sign Out */}
             {onSignOut && (
               <>
                 <div className="my-1 border-t border-gray-200" />

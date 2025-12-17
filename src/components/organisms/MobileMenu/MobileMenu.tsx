@@ -20,7 +20,6 @@ interface MobileMenuProps {
 export function MobileMenu({ menuItems, className }: Readonly<MobileMenuProps>) {
   const { isMobileMenuOpen, closeMobileMenu } = useUIStore();
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -33,7 +32,6 @@ export function MobileMenu({ menuItems, className }: Readonly<MobileMenuProps>) 
     };
   }, [isMobileMenuOpen]);
 
-  // Handle ESC key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isMobileMenuOpen) {
@@ -51,14 +49,12 @@ export function MobileMenu({ menuItems, className }: Readonly<MobileMenuProps>) 
 
   return (
     <>
-      {/* Backdrop */}
       <div
         data-component="MobileMenu.Backdrop"
         className="fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-200"
         onClick={closeMobileMenu}
       />
 
-      {/* Menu Panel */}
       <div
         data-component="MobileMenu"
         className={cn(
@@ -66,7 +62,6 @@ export function MobileMenu({ menuItems, className }: Readonly<MobileMenuProps>) 
           className
         )}
       >
-        {/* Header */}
         <div
           data-component="MobileMenu.Header"
           className="flex items-center justify-between p-4 border-b border-gray-200"
@@ -81,7 +76,6 @@ export function MobileMenu({ menuItems, className }: Readonly<MobileMenuProps>) 
           </button>
         </div>
 
-        {/* Menu Items */}
         <nav data-component="MobileMenu.Nav" className="p-4">
           <ul className="space-y-1">
             {menuItems.map((item, index) => (

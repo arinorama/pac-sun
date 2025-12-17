@@ -48,7 +48,6 @@ export function LanguageSwitcher({
   }, [isOpen]);
 
   const handleLanguageChange = (languageCode: string) => {
-    // Remove current locale from pathname and add new one
     const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '');
     const newPath = `/${languageCode}${pathWithoutLocale}`;
     router.push(newPath);

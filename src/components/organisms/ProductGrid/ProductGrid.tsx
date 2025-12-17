@@ -88,7 +88,10 @@ export function ProductGrid({
   return (
     <div data-component="ProductGrid" className={gridClass}>
       {products.map((product) => (
-        <ProductCard key={product.sys.id} product={product} />
+        <ProductCard
+          key={product.sys.id}
+          product={product}
+        />
       ))}
     </div>
   );

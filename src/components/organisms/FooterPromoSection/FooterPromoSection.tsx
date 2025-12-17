@@ -105,7 +105,7 @@ export function FooterPromoSection({ section }: Readonly<FooterPromoSectionProps
                         data-component="FooterPromoSection.CTA"
                         href={cardFields.ctaLink}
                         variant="border"
-                        className="mt-4"
+                        className="mt-4 text-white text-center"
                       >
                         {cardFields.ctaText}
                       </CTALink>

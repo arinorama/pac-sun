@@ -107,7 +107,6 @@ export function ProductFilter({
       data-component="ProductFilter"
       className={cn('bg-white border border-gray-200 rounded-lg p-4', className)}
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
         {totalSelectedCount > 0 && onClearAll && (
@@ -124,7 +123,6 @@ export function ProductFilter({
 
       <Divider spacing="none" className="mb-2" />
 
-      {/* Filter Groups */}
       <div className="space-y-0 divide-y divide-gray-200">
         {filterGroups.map((group) => (
           <FilterGroupComponent
