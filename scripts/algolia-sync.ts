@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import * as path from 'path';
+import * as path from 'node:path';
 import { createClient } from 'contentful';
 import algoliasearch from 'algoliasearch';
 import type { Asset } from 'contentful';
@@ -105,85 +105,93 @@ function transformProductToAlgoliaRecord(
   };
 }
 
-async function syncToAlgolia() {
-  try {
-    console.log('🚀 Starting Algolia sync...\n');
+// Main sync logic with top-level await
+try {
+  // eslint-disable-next-line no-console
+  console.log('🚀 Starting Algolia sync...\n');
 
-    // Initialize clients
-    const contentfulClient = createClient({
-      space: CONTENTFUL_SPACE_ID,
-      accessToken: CONTENTFUL_ACCESS_TOKEN,
-    });
+  // Initialize clients
+  const contentfulClient = createClient({
+    space: CONTENTFUL_SPACE_ID,
+    accessToken: CONTENTFUL_ACCESS_TOKEN,
+  });
 
-    const algoliaClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY);
+  const algoliaClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY);
 
-    // Sync EN products
-    console.log('📦 Syncing EN products...');
-    const enProducts = await contentfulClient.getEntries({
-      content_type: 'product',
-      locale: 'en-US',
-      limit: 1000,
-      include: 2,
-    });
+  // Sync EN products
+  // eslint-disable-next-line no-console
+  console.log('📦 Syncing EN products...');
+  const enProducts = await contentfulClient.getEntries({
+    content_type: 'product',
+    locale: 'en-US',
+    limit: 1000,
+    include: 2,
+  });
 
-    const enRecords = enProducts.items.map((product) =>
-      transformProductToAlgoliaRecord(
-        product as { sys: { id: string }; fields: ProductFields },
-        'en'
-      )
-    );
+  const enRecords = enProducts.items.map((product) =>
+    transformProductToAlgoliaRecord(
+      product as { sys: { id: string }; fields: ProductFields },
+      'en'
+    )
+  );
 
-    const enIndex = algoliaClient.initIndex(ALGOLIA_INDEXES.PRODUCTS_EN);
-    
-    // Configure index settings
-    await enIndex.setSettings(SEARCH_SETTINGS);
-    
-    // Save records
-    const enResult = await enIndex.saveObjects(enRecords, {
-      autoGenerateObjectIDIfNotExist: false,
-    });
-    
-    console.log(`   ✅ Synced ${enRecords.length} EN products\n`);
+  const enIndex = algoliaClient.initIndex(ALGOLIA_INDEXES.PRODUCTS_EN);
+  
+  // Configure index settings
+  await enIndex.setSettings(SEARCH_SETTINGS);
+  
+  // Save records
+  await enIndex.saveObjects(enRecords, {
+    autoGenerateObjectIDIfNotExist: false,
+  });
+  
+  // eslint-disable-next-line no-console
+  console.log(`   ✅ Synced ${enRecords.length} EN products\n`);
 
-    // Sync TR products
-    console.log('📦 Syncing TR products...');
-    const trProducts = await contentfulClient.getEntries({
-      content_type: 'product',
-      locale: 'tr-TR',
-      limit: 1000,
-      include: 2,
-    });
+  // Sync TR products
+  // eslint-disable-next-line no-console
+  console.log('📦 Syncing TR products...');
+  const trProducts = await contentfulClient.getEntries({
+    content_type: 'product',
+    locale: 'tr-TR',
+    limit: 1000,
+    include: 2,
+  });
 
-    const trRecords = trProducts.items.map((product) =>
-      transformProductToAlgoliaRecord(
-        product as { sys: { id: string }; fields: ProductFields },
-        'tr'
-      )
-    );
+  const trRecords = trProducts.items.map((product) =>
+    transformProductToAlgoliaRecord(
+      product as { sys: { id: string }; fields: ProductFields },
+      'tr'
+    )
+  );
 
-    const trIndex = algoliaClient.initIndex(ALGOLIA_INDEXES.PRODUCTS_TR);
-    
-    // Configure index settings
-    await trIndex.setSettings(SEARCH_SETTINGS);
-    
-    // Save records
-    const trResult = await trIndex.saveObjects(trRecords, {
-      autoGenerateObjectIDIfNotExist: false,
-    });
-    
-    console.log(`   ✅ Synced ${trRecords.length} TR products\n`);
+  const trIndex = algoliaClient.initIndex(ALGOLIA_INDEXES.PRODUCTS_TR);
+  
+  // Configure index settings
+  await trIndex.setSettings(SEARCH_SETTINGS);
+  
+  // Save records
+  await trIndex.saveObjects(trRecords, {
+    autoGenerateObjectIDIfNotExist: false,
+  });
+  
+  // eslint-disable-next-line no-console
+  console.log(`   ✅ Synced ${trRecords.length} TR products\n`);
 
-    // Summary
-    console.log('📊 Summary:');
-    console.log(`   EN Index: ${ALGOLIA_INDEXES.PRODUCTS_EN}`);
-    console.log(`   TR Index: ${ALGOLIA_INDEXES.PRODUCTS_TR}`);
-    console.log(`   Total Records: ${enRecords.length + trRecords.length}\n`);
-    console.log('✨ Sync completed successfully!\n');
-  } catch (error) {
-    console.error('❌ Error syncing to Algolia:', error);
-    process.exit(1);
-  }
+  // Summary
+  // eslint-disable-next-line no-console
+  console.log('📊 Summary:');
+  // eslint-disable-next-line no-console
+  console.log(`   EN Index: ${ALGOLIA_INDEXES.PRODUCTS_EN}`);
+  // eslint-disable-next-line no-console
+  console.log(`   TR Index: ${ALGOLIA_INDEXES.PRODUCTS_TR}`);
+  // eslint-disable-next-line no-console
+  console.log(`   Total Records: ${enRecords.length + trRecords.length}\n`);
+  // eslint-disable-next-line no-console
+  console.log('✨ Sync completed successfully!\n');
+} catch (error) {
+  // eslint-disable-next-line no-console
+  console.error('❌ Error syncing to Algolia:', error);
+  process.exit(1);
 }
-
-syncToAlgolia();
 

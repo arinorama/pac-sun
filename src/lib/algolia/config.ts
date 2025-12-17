@@ -63,6 +63,6 @@ export const SEARCH_SETTINGS = {
   enableRules: true,
   
   // Filtering
-  removeWordsIfNoResults: 'lastWords',
+  removeWordsIfNoResults: 'lastWords' as const,
 };
 

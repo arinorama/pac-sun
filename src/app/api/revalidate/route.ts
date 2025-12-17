@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status: 'ok',
-    message: 'Revalidation webhook endpoint is active',
+    message: 'Revalidation webhook endpoint is active (legacy - use /api/webhook/contentful)',
+    deprecated: true,
   });
 }
 

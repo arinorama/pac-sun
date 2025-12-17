@@ -30,7 +30,7 @@ interface FooterPromoSectionProps {
   };
 }
 
-export function FooterPromoSection({ section }: FooterPromoSectionProps) {
+export function FooterPromoSection({ section }: Readonly<FooterPromoSectionProps>) {
   const fields = section.fields;
   const promoCards = fields.promoCards || [];
 
