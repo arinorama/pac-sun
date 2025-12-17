@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { useCartStore } from '@/store/useCartStore';
 import { useUIStore } from '@/store/useUIStore';
-import { Button } from '@/components/atoms/Button';
 import { IconButton } from '@/components/atoms/IconButton';
 import { SearchModal } from '@/components/organisms/SearchModal';
-import { ShoppingCart, User, Search, Camera, Heart } from 'lucide-react';
+import { User, Search } from 'lucide-react';
 import type { Asset } from 'contentful';
 
 // Types for Contentful header data
@@ -55,8 +53,7 @@ interface HeaderProps {
 }
 
 export function Header({ headerData, locale = 'en' }: HeaderProps) {
-  const { totalItems } = useCartStore();
-  const { openCart, toggleMobileMenu, openSearchModal } = useUIStore();
+  const { toggleMobileMenu, openSearchModal } = useUIStore();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -267,14 +264,6 @@ export function Header({ headerData, locale = 'en' }: HeaderProps) {
                 <Search className="w-5 h-5 text-gray-900" />
               </IconButton>
 
-              {/* Camera/Photo */}
-              <IconButton
-                className="hidden lg:flex"
-                aria-label="Photo"
-              >
-                <Camera className="w-5 h-5 text-gray-900" />
-              </IconButton>
-
               {/* Account */}
               <IconButton
                 className="hidden lg:flex"
@@ -282,34 +271,6 @@ export function Header({ headerData, locale = 'en' }: HeaderProps) {
               >
                 <User className="w-5 h-5 text-gray-900" />
               </IconButton>
-
-              {/* My Likes */}
-              <IconButton
-                className="hidden lg:flex"
-                aria-label="My Likes"
-              >
-                <Heart className="w-5 h-5 text-gray-900" />
-              </IconButton>
-
-              {/* Cart */}
-              <Button
-                data-component="Header.CartButton"
-                variant="ghost"
-                size="icon"
-                onClick={openCart}
-                aria-label="Shopping cart"
-                className="relative hover:bg-gray-100"
-              >
-                <ShoppingCart className="h-5 w-5 text-gray-900" />
-                {totalItems > 0 && (
-                  <span
-                    data-component="Header.CartCount"
-                    className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
-                  >
-                    {totalItems}
-                  </span>
-                )}
-              </Button>
             </div>
           </div>
         </div>

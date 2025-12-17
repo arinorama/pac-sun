@@ -19,17 +19,11 @@ const footerLinks = {
   account: [
     { label: 'Join Pacsun Rewards', href: '/rewards' },
     { label: 'My Account', href: '/account' },
-    { label: 'Wish List', href: '/wishlist' },
     { label: 'Customer Service', href: '/customer-service' },
     { label: 'Student Discount', href: '/student-discount' },
   ],
   shopping: [
-    { label: 'Order Status', href: '/orders' },
-    { label: 'Returns', href: '/returns' },
     { label: 'Promotions & Discounts', href: '/promotions' },
-    { label: 'Shipping', href: '/shipping' },
-    { label: 'Payment', href: '/payment' },
-    { label: 'Gift Cards', href: '/gift-cards' },
   ],
   style: [
     { label: 'Style Guide', href: '/style-guide' },
@@ -222,18 +216,6 @@ export function Footer() {
               })}
             </ul>
           </div>
-        </div>
-
-        <div
-          data-component="Footer.Disclaimer"
-          className="text-xs text-gray-500 mb-6 max-w-4xl"
-        >
-          <p>
-            *Valid on select styles and brands. Savings not applicable to taxes.
-            Free standard shipping on orders equal to or over $10 before tax. U.S.
-            only. Shipments to AK, HI, PR and Military APO/FPO do not qualify for
-            free shipping. Offer subject to change.
-          </p>
         </div>
 
         <div
