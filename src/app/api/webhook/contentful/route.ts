@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const isEntry = payload.sys.type === 'Entry';
 
     // eslint-disable-next-line no-console
-    console.log(`📥 Webhook received: ${contentType || 'Asset'} (${entryId})`);
+    console.log(`Webhook received: ${contentType || 'Asset'} (${entryId})`);
 
     // 3. Handle based on content type
     const actions: string[] = [];
@@ -73,17 +73,17 @@ export async function POST(request: NextRequest) {
         if (algoliaResponse.ok) {
           const algoliaData = await algoliaResponse.json();
           // eslint-disable-next-line no-console
-          console.log('✅ Algolia sync success:', algoliaData);
+          console.log('Algolia sync success:', algoliaData);
           actions.push('algolia-sync-triggered');
         } else {
           const errorText = await algoliaResponse.text();
           // eslint-disable-next-line no-console
-          console.error('⚠️ Algolia sync failed (status', algoliaResponse.status, '):', errorText);
+          console.error('Algolia sync failed (status', algoliaResponse.status, '):', errorText);
           actions.push(`algolia-sync-failed-${algoliaResponse.status}`);
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('⚠️ Algolia sync error:', error);
+        console.error('Algolia sync error:', error);
         // eslint-disable-next-line no-console
         console.error('Error details:', error instanceof Error ? error.message : String(error));
         actions.push('algolia-sync-error');
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('❌ Webhook error:', error);
+    console.error('Webhook error:', error);
     return NextResponse.json(
       {
         message: 'Error processing webhook',

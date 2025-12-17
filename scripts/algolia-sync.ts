@@ -108,7 +108,7 @@ function transformProductToAlgoliaRecord(
 // Main sync logic with top-level await
 try {
   // eslint-disable-next-line no-console
-  console.log('🚀 Starting Algolia sync...\n');
+  console.log('Starting Algolia sync...\n');
 
   // Initialize clients
   const contentfulClient = createClient({
@@ -120,7 +120,7 @@ try {
 
   // Sync EN products
   // eslint-disable-next-line no-console
-  console.log('📦 Syncing EN products...');
+  console.log('Syncing EN products...');
   const enProducts = await contentfulClient.getEntries({
     content_type: 'product',
     locale: 'en-US',
@@ -146,11 +146,11 @@ try {
   });
   
   // eslint-disable-next-line no-console
-  console.log(`   ✅ Synced ${enRecords.length} EN products\n`);
+  console.log(`   Synced ${enRecords.length} EN products\n`);
 
   // Sync TR products
   // eslint-disable-next-line no-console
-  console.log('📦 Syncing TR products...');
+  console.log('Syncing TR products...');
   const trProducts = await contentfulClient.getEntries({
     content_type: 'product',
     locale: 'tr-TR',
@@ -176,11 +176,11 @@ try {
   });
   
   // eslint-disable-next-line no-console
-  console.log(`   ✅ Synced ${trRecords.length} TR products\n`);
+  console.log(`   Synced ${trRecords.length} TR products\n`);
 
   // Summary
   // eslint-disable-next-line no-console
-  console.log('📊 Summary:');
+  console.log('Summary:');
   // eslint-disable-next-line no-console
   console.log(`   EN Index: ${ALGOLIA_INDEXES.PRODUCTS_EN}`);
   // eslint-disable-next-line no-console
@@ -188,10 +188,10 @@ try {
   // eslint-disable-next-line no-console
   console.log(`   Total Records: ${enRecords.length + trRecords.length}\n`);
   // eslint-disable-next-line no-console
-  console.log('✨ Sync completed successfully!\n');
+  console.log('Sync completed successfully!\n');
 } catch (error) {
   // eslint-disable-next-line no-console
-  console.error('❌ Error syncing to Algolia:', error);
+  console.error('Error syncing to Algolia:', error);
   process.exit(1);
 }
 

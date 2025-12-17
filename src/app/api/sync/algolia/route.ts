@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     }
 
     // eslint-disable-next-line no-console
-    console.log('🔄 Starting Algolia sync...');
+    console.log('Starting Algolia sync...');
 
     // 3. Initialize clients
     const contentfulClient = createClient({
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
     const totalRecords = enRecords.length + trRecords.length;
 
     // eslint-disable-next-line no-console
-    console.log(`✅ Synced ${totalRecords} products to Algolia`);
+    console.log(`Synced ${totalRecords} products to Algolia`);
 
     return NextResponse.json({
       success: true,
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('❌ Algolia sync error:', error);
+    console.error('Algolia sync error:', error);
     return NextResponse.json(
       {
         message: 'Error syncing to Algolia',
