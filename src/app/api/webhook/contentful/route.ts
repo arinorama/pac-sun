@@ -65,20 +65,27 @@ export async function POST(request: NextRequest) {
             method: 'POST',
             headers: {
               'x-webhook-secret': webhookSecret,
+              'Content-Type': 'application/json',
             },
           }
         );
 
         if (algoliaResponse.ok) {
+          const algoliaData = await algoliaResponse.json();
+          // eslint-disable-next-line no-console
+          console.log('✅ Algolia sync success:', algoliaData);
           actions.push('algolia-sync-triggered');
         } else {
+          const errorText = await algoliaResponse.text();
           // eslint-disable-next-line no-console
-          console.error('⚠️ Algolia sync failed:', await algoliaResponse.text());
-          actions.push('algolia-sync-failed');
+          console.error('⚠️ Algolia sync failed (status', algoliaResponse.status, '):', errorText);
+          actions.push(`algolia-sync-failed-${algoliaResponse.status}`);
         }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('⚠️ Algolia sync error:', error);
+        // eslint-disable-next-line no-console
+        console.error('Error details:', error instanceof Error ? error.message : String(error));
         actions.push('algolia-sync-error');
       }
     }
