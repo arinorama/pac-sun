@@ -21,24 +21,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse webhook payload
-    const body = await request.json();
+    // Parse webhook payload (validate request)
+    await request.json();
 
-    // Revalidate all locale pages
-    // Note: This revalidates the entire locale routes
-    // You can make this more granular based on content type
-    revalidatePath('/[locale]', 'page');
-
-    // If you want to be more specific:
-    const contentType = body.sys?.contentType?.sys?.id;
+    // Revalidate everything from root - aggressive approach
+    // This ensures all locales and nested routes are revalidated
+    revalidatePath('/', 'layout');
     
-    if (contentType === 'page') {
-      // Revalidate specific page if you have the slug
-      const slug = body.fields?.slug?.['en-US'] || body.fields?.slug?.['tr'];
-      if (slug === 'home') {
-        revalidatePath('/[locale]/(main)', 'page');
-      }
-    }
+    // Also revalidate specific locale paths for guaranteed coverage
+    revalidatePath('/en', 'layout');
+    revalidatePath('/tr', 'layout');
 
     return NextResponse.json({
       revalidated: true,
