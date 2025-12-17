@@ -36,7 +36,7 @@ const textVariants = cva('', {
 });
 
 interface TextProps
-  extends React.HTMLAttributes<HTMLParagraphElement>,
+  extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'color'>,
     VariantProps<typeof textVariants> {
   as?: 'p' | 'span' | 'div';
   children: React.ReactNode;
