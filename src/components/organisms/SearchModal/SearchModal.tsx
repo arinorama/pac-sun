@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { InstantSearch, Configure, useSearchBox } from 'react-instantsearch';
 import { X } from 'lucide-react';
 import { searchClient } from '@/lib/algolia/client';
@@ -17,7 +17,7 @@ interface SearchModalProps {
 // Inner component to access InstantSearch context
 function SearchModalContent({ locale }: { locale: string }) {
   const { closeSearchModal } = useUIStore();
-  const { query, refine } = useSearchBox();
+  const { refine } = useSearchBox();
 
   const handleSuggestionClick = (suggestion: string) => {
     refine(suggestion);

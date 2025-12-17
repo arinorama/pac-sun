@@ -1,3 +1,5 @@
+import type { Hit } from 'instantsearch.js';
+
 // Algolia product record type
 export interface AlgoliaProduct {
   objectID: string;
@@ -29,16 +31,7 @@ export interface AlgoliaProduct {
 }
 
 // Search hit type (includes Algolia metadata)
-export interface AlgoliaProductHit extends AlgoliaProduct {
-  _highlightResult?: {
-    title?: { value: string; matchLevel: string };
-    brand?: { value: string; matchLevel: string };
-    category?: { value: string; matchLevel: string };
-  };
-  _snippetResult?: {
-    description?: { value: string };
-  };
-}
+export type AlgoliaProductHit = Hit<AlgoliaProduct>;
 
 // Query suggestion type
 export interface AlgoliaQuerySuggestion {
